@@ -7,16 +7,26 @@ class BooksController < ApplicationController
   def show
     @book = Book.find(params[:id])
     @book_comment = BookComment.new
+    @book_detail = Book.find(params[:id])
+
+    #閲覧数
+    unless ViewCount.find_by(user_id: current_user.id, book_id: @book_detail.id)
+      current_user.view_counts.create(book_id: @book_detail.id)
+    end
   end
 
 # allメソッドでモデルと紐づくbookのすべてのレコードを取得
 # newメソッドでbookを作成(bookクラスをインスタンス化)
 
   def index
+     @book_detail = Book.find(params[:id])
+    unless ViewCount.find_by(user_id: current_user.id, book_id: @book_detail.id)
+      current_user.view_counts.create(book_id: @book_detail.id)
+    end
     to = Time.current.at_end_of_day             #Time.currentで現在の日時を取得
     from = (to - 6.day).at_beginning_of_day     #[ to(変数) - 6.day(期間) ]で一週間を定義
     @books = Book.includes(:favorited_users).
-    
+
       sort_by {|x|
         x.favorited_users.includes(:favorites).where(created_at: from...to).size
       }.reverse

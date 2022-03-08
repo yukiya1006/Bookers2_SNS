@@ -1,0 +1,8 @@
+
+<!--@userがログインしていない人であるという条件-->
+<% if current_user != user %>
+<!--@userが相互フォロー状態の時のときである条件-->
+<% if (current_user.following? user) && (user.following? current_user)  %>
+<%= link_to 'chatを始める', chat_path(user.id), class: 'btn btn-primary' %>
+<% end %>
+<% end %>
